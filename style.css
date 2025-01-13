@@ -1,0 +1,48 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+header {
+    background-color: #1f8ceb;
+    color: white;
+    text-align: center;
+    padding: 1em 0;
+}
+main {
+    margin: 20px;
+}
+h1, h2 {
+    margin: 0;
+}
+#card-list ul {
+    list-style: none;
+    padding: 0;
+}
+#card-list li {
+    background: white;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+form {
+    display: flex;
+    flex-direction: column;
+}
+form input, form button {
+    margin: 5px 0;
+    padding: 10px;
+    font-size: 16px;
+}
+form button {
+    background-color: #1f8ceb;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+form button:hover {
+    background-color: #0065b3;
+}
