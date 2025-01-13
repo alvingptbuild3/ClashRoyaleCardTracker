@@ -1,58 +1,42 @@
-document.getElementById('tagForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    let tag = document.getElementById('tag').value;
+// Your Clash Royale API Key
+const apiKey = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6ImMyOTUwMjNlLThhMzAtNDAzOS1hYjFkLWU5YTMyNTM4NjljOSIsImlhdCI6MTczNjc0NzQ4MSwic3ViIjoiZGV2ZWxvcGVyLzgwMzljMzlhLWQzNmUtZDJmMS0zZWYwLWE4NmIyNGU3MTBjMyIsInNjb3BlcyI6WyJyb3lhbGUiXSwibGltaXRzIjpbeyJ0aWVyIjoiZGV2ZWxvcGVyL3NpbHZlciIsInR5cGUiOiJ0aHJvdHRsaW5nIn0seyJjaWRycyI6WyI0OS4zNy4xMzUuNjIiXSwidHlwZSI6ImNsaWVudCJ9XX0.CwRdaEUe_hSEkEyJAUM48uSxK8UGX_oNC3zke0zn6Ct0Kf_LU8HTbZLnDjlSKM2XwN1t0aVhWpXAyQtUPs-IFg'; 
+
+document.getElementById('playerForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const playerTag = document.getElementById('tag').value;
     
-    if(tag) {
-        fetchCardMastery(tag);
-    } else {
-        document.getElementById('progress').innerHTML = "Please enter a valid Clash Royale tag.";
+    try {
+        const response = await fetch(`https://api.clashroyale.com/v1/players/%23${playerTag}/currentdeck`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch data');
+        }
+
+        const data = await response.json();
+        
+        if (data.cards) {
+            displayDeckInfo(data.cards);
+        } else {
+            document.getElementById('deckInfo').innerText = 'No deck information found for this player.';
+        }
+    } catch (error) {
+        console.error(error);
+        document.getElementById('deckInfo').innerText = 'Error fetching data. Please try again.';
     }
 });
 
-function fetchCardMastery(tag) {
-    // Replace 'your_api_key' with your actual Supercell API key.
-    const apiKey = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6ImMyOTUwMjNlLThhMzAtNDAzOS1hYjFkLWU5YTMyNTM4NjljOSIsImlhdCI6MTczNjc0NzQ4MSwic3ViIjoiZGV2ZWxvcGVyLzgwMzljMzlhLWQzNmUtZDJmMS0zZWYwLWE4NmIyNGU3MTBjMyIsInNjb3BlcyI6WyJyb3lhbGUiXSwibGltaXRzIjpbeyJ0aWVyIjoiZGV2ZWxvcGVyL3NpbHZlciIsInR5cGUiOiJ0aHJvdHRsaW5nIn0seyJjaWRycyI6WyI0OS4zNy4xMzUuNjIiXSwidHlwZSI6ImNsaWVudCJ9XX0.CwRdaEUe_hSEkEyJAUM48uSxK8UGX_oNC3zke0zn6Ct0Kf_LU8HTbZLnDjlSKM2XwN1t0aVhWpXAyQtUPs-IFg'; 
-    const url = `https://api.clashroyale.com/v1/players/%23${tag}/currentdeck`;
+function displayDeckInfo(cards) {
+    const deckInfoContainer = document.getElementById('deckInfo');
+    deckInfoContainer.innerHTML = `<h2>Your Deck:</h2>`;
     
-    fetch(url, {
-        headers: {
-            'Authorization': `Bearer ${apiKey}`
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        displayProgress(data);
-    })
-    .catch(error => {
-        console.error('Error fetching data:', error);
-        document.getElementById('progress').innerHTML = "Could not fetch data. Please check your tag.";
+    cards.forEach(card => {
+        deckInfoContainer.innerHTML += `
+            <p>Card: ${card.name} | Level: ${card.level}</p>
+        `;
     });
 }
-
-function displayProgress(data) {
-    if (data.cards) {
-        let html = `<h3>Your Card Mastery Progress:</h3>`;
-        data.cards.forEach(card => {
-            html += `<p>${card.name}: ${card.level} (${card.maxLevel})</p>`;
-        });
-        document.getElementById('progress').innerHTML = html;
-    } else {
-        document.getElementById('progress').innerHTML = "No data found for this tag.";
-    }
-}
-
-document.getElementById('card-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    const cardName = document.getElementById('card-name').value.trim();
-    const masteryLevel = document.getElementById('mastery-level').value;
-
-    if (cardName && masteryLevel) {
-        const listItem = document.createElement('li');
-        listItem.textContent = `${cardName} - Mastery Level: ${masteryLevel}`;
-        document.querySelector('#card-list ul').appendChild(listItem);
-
-        document.getElementById('card-name').value = '';
-        document.getElementById('mastery-level').value = '';
-    }
-});
